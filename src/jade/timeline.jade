@@ -1,0 +1,13 @@
+years
+	year(ng-repeat="(year, months) in journalEntries") 
+		//- h3 {{year}}
+		months
+			month(ng-repeat="(month, days) in months")
+				h3 {{month | getMonthName}} {{year}}
+				days
+					day(ng-repeat="(i, events) in days")
+						h4 {{i+1}}
+						journal-entries(ng-if="events.length > 0")
+							journal-entry(ng-repeat="(i, event) in events | orderBy:'author' | filter:authorName") 
+								h5.author {{event.author}}
+								//- p.text(ng-bind-html="event.body")

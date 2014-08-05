@@ -1,0 +1,25 @@
+@import './import/functions.styl'
+
+.entry-active
+	fixed top 0 right 0 bottom 0 left 0
+	background white
+	color black
+	overflow-y auto
+	white-space normal
+	z-index 1000
+	padding 5% 25%
+	display none
+
+	&.active
+		display block
+
+	h5, .date
+		inline-block()
+		vertical-align initial
+
+	h5
+		font-size 2em
+
+	.date
+		margin-left 40px
+		color gray

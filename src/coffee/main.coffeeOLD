@@ -1,0 +1,96 @@
+require 'angular/angular'
+require 'angular-sanitize/angular-sanitize'
+# reactTpl = require '../views/tmp.jsx'
+
+console.log reactTpl
+
+_ = require 'lodash'
+
+createGrid = require '../../create-grid'
+
+timelineTpl = require '../jade/timeline.jade'
+
+lnc = angular.module 'lnc', ['ngSanitize']
+
+lnc.factory 'JournalEntries', ($http, StructureTimeline) ->
+	fetch: (successCb) ->
+		errorCb = (data, status, headers, config) ->
+
+		transform = (data) -> StructureTimeline JSON.parse data
+
+		$http.get('/api/journal-entries', {transformResponse: transform}).success(successCb).error(errorCb)
+
+
+lnc.controller 'JournalEntriesCtrl', ($scope, JournalEntries) ->
+	# $scope.
+	JournalEntries.fetch (timelineData) ->
+		$scope.journalEntries = timelineData[0]
+		$scope.journalAuthors = timelineData[1]
+		$scope.dummytimeline = timelineData[2]
+	# angular.element('ul.years').css 'background', 'green'
+
+lnc.service 'Months', -> ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+
+lnc.filter 'getMonthName', (Months) -> (input) -> Months[input]
+
+lnc.service 'StructureTimeline', (Months) -> 
+	(entries) ->
+		grid = createGrid entries
+
+		structure = {}
+		authors = []
+
+		daysOfMonth = (month, year) -> new Date(year, month+1, 0).getDate()
+		
+		lowestDate = new Date entries[0].date
+		lowestDate.setMonth 0
+		lowestDate.setDate 1
+
+		highestDate = new Date entries[entries.length-1].date
+		highestDate.setMonth 11
+		highestDate.setDate 1
+
+		entry = entries[entries.length - 1]
+
+		# Loop from highest to lowest, because entries.pop() is much faster than entries.shift()
+		while highestDate >= lowestDate
+			
+			monthArr = []
+
+			month = highestDate.getMonth()
+			year = highestDate.getFullYear()
+
+			structure[year] = [] unless structure.hasOwnProperty year
+			
+			# Start day on lenght of days of current month. Ie 28, 29, 30 or 31.
+			day = daysOfMonth(month, year) - 1
+
+			# Loop all days of the current month
+			while day >= 0
+				monthArr[day] = []
+
+				while entries.length > 0 and entry.date is new Date(year, month, day+1).toISOString()
+					match = entries.pop()
+					authors.push match.author if authors.indexOf(match.author) is -1
+					monthArr[day].push match
+					entry = entries[entries.length - 1]
+
+				day = day - 1
+
+			structure[year].push monthArr
+
+			highestDate.setMonth month - 1
+
+		# Reversing the monthsArray is faster than using structure[year].unshift monthArr
+		monthsArray.reverse() for year, monthsArray of structure
+
+		[structure, authors, grid]
+
+lnc.directive 'timeline', ->
+	restrict: 'E'
+	template: timelineTpl()
+	link: (scope, element, attrs) ->
+		scope.$watch 'journalEntries', (val) -> 
+			if val?
+				width = (_.size(val) * 12 * 80) + 'vw'
+				angular.element(element).find('years').css 'width', width

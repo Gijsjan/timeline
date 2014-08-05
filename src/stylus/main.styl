@@ -1,0 +1,181 @@
+@import './import/functions.styl'
+
+year_width = 80vw
+entryHeight = 20px
+
+html, body
+	height 100%
+	width 100%
+	margin 0
+	padding 0
+
+h1, h2, h3, h4, h5
+	margin 0
+	padding 0
+
+.timeline
+	white-space nowrap
+
+	ul
+		margin 0
+		padding 0
+
+	ul.years, li.year, ul.months, li.month, ul.days, li.day
+		inline-block()
+
+	ul.years
+		position absolute
+		left 0
+		transition 250ms
+		
+		li.year
+			ul.months
+				li.month
+					ul.days
+						li.day
+							display inline-block
+							vertical-align top
+							width 50px
+							margin 0
+							padding 5px
+
+							ul.entries
+								list-style none
+								position relative
+
+								li.entry
+									box-sizing border-box
+									background black
+									color white
+									margin 5px 0
+									padding-left 8px
+									height entryHeight
+									// width 90px
+									line-height entryHeight
+									position absolute
+
+									&.entry
+										left 0
+
+									for num in (0..10)	
+										&.row{num}
+											top num * (entryHeight + 10px)
+
+									for num in (0..10)	
+										&.colspan{num}
+											width (num * 50) - 10px
+
+									for num in (0..10)	
+										&.rowspan{num}
+											height (num * entryHeight) + ((num - 1) * 10)
+											
+
+									// &.row0
+									// 	top 0
+
+									// &.row1
+									// 	top 60px
+
+									// &.row2
+									// 	top 120px
+
+									// &.row3
+									// 	top 180px
+
+									// &.row4
+									// 	top 240px
+
+									// &.row5
+									// 	top 300px
+
+									// &.row6
+									// 	top 360px
+
+									// &.row7
+									// 	top 420px
+
+									// &.row8
+									// 	top 480px
+
+									// &.row9
+									// 	top 540px
+
+
+// body
+// overflow hidden
+
+// years, months, days
+// 	display flex
+
+// 	year, month, day
+// 		flex 1 1 auto
+
+// years
+// 	padding-left ((100vw - year_width)/2)
+
+// 	year
+// 		max-width 12 * year_width
+
+// months
+// 	width 12 * year_width
+
+// 	month
+// 		width year_width
+// 		max-width year_width
+
+// days
+// 	width year_width
+// 	padding-top 40px
+// 	border-left 1px solid #CCC
+
+// 	day
+// 		position relative
+// 		border-left 1px solid #CCC
+// 		padding-left 6px
+
+// 		&:first-child
+// 			border none
+
+// journal-entries
+// 	position absolute
+// 	left 0
+// 	right 0
+
+// 	journal-entry
+// 		padding 20px 0 4px 6px
+// 		white-space nowrap
+// 		border-left 1px solid #EEE
+// 		border-bottom 1px solid #EEE
+// 		margin-left -1px
+// 		display block
+
+// h3, h4
+// 	margin 0
+// 	padding 0
+
+// h3
+// 	position absolute
+// 	margin-left 6px
+// 	z-index 1
+// 	background white
+// 	white-space nowrap
+// 	margin-top 8px
+// 	font-size 1em
+
+// h4
+// 	font-size 0.8em
+// 	font-weight normal
+
+// ul
+// 	list-style none
+// 	white-space nowrap
+
+// 	& > li > ul > li
+// 		display inline-block
+// 		width 18px
+// 		height 18px
+// 		color white
+// 		background black
+// 		border 2px solid white
+// 		padding 5px
+// 		text-align center

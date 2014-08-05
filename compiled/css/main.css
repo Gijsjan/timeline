@@ -1,0 +1,230 @@
+.entry-active {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: #fff;
+  color: #000;
+  overflow-y: auto;
+  white-space: normal;
+  z-index: 1000;
+  padding: 5% 25%;
+  display: none;
+}
+.entry-active.active {
+  display: block;
+}
+.entry-active h5,
+.entry-active .date {
+  display: inline-block;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  vertical-align: top;
+  vertical-align: initial;
+}
+.entry-active h5 {
+  font-size: 2em;
+}
+.entry-active .date {
+  margin-left: 40px;
+  color: #808080;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+h1,
+h2,
+h3,
+h4,
+h5 {
+  margin: 0;
+  padding: 0;
+}
+.timeline {
+  white-space: nowrap;
+}
+.timeline ul {
+  margin: 0;
+  padding: 0;
+}
+.timeline ul.years,
+.timeline li.year,
+.timeline ul.months,
+.timeline li.month,
+.timeline ul.days,
+.timeline li.day {
+  display: inline-block;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  vertical-align: top;
+}
+.timeline ul.years {
+  position: absolute;
+  left: 0;
+  -webkit-transition: 250ms;
+  -moz-transition: 250ms;
+  -o-transition: 250ms;
+  -ms-transition: 250ms;
+  transition: 250ms;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day {
+  display: inline-block;
+  vertical-align: top;
+  width: 50px;
+  margin: 0;
+  padding: 5px;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries {
+  list-style: none;
+  position: relative;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  background: #000;
+  color: #fff;
+  margin: 5px 0;
+  padding-left: 8px;
+  height: 20px;
+  line-height: 20px;
+  position: absolute;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.entry {
+  left: 0;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.row0 {
+  top: 0px;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.row1 {
+  top: 30px;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.row2 {
+  top: 60px;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.row3 {
+  top: 90px;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.row4 {
+  top: 120px;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.row5 {
+  top: 150px;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.row6 {
+  top: 180px;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.row7 {
+  top: 210px;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.row8 {
+  top: 240px;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.row9 {
+  top: 270px;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.row10 {
+  top: 300px;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.colspan0 {
+  width: -10px;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.colspan1 {
+  width: 40px;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.colspan2 {
+  width: 90px;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.colspan3 {
+  width: 140px;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.colspan4 {
+  width: 190px;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.colspan5 {
+  width: 240px;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.colspan6 {
+  width: 290px;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.colspan7 {
+  width: 340px;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.colspan8 {
+  width: 390px;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.colspan9 {
+  width: 440px;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.colspan10 {
+  width: 490px;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.rowspan0 {
+  height: -10px;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.rowspan1 {
+  height: 20px;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.rowspan2 {
+  height: 50px;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.rowspan3 {
+  height: 80px;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.rowspan4 {
+  height: 110px;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.rowspan5 {
+  height: 140px;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.rowspan6 {
+  height: 170px;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.rowspan7 {
+  height: 200px;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.rowspan8 {
+  height: 230px;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.rowspan9 {
+  height: 260px;
+}
+.timeline ul.years li.year ul.months li.month ul.days li.day ul.entries li.entry.rowspan10 {
+  height: 290px;
+}
+
+.minimap {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 10%;
+}
+.minimap svg rect {
+  fill: #ff0;
+  fill-opacity: 0.5;
+}
+.minimap svg rect.even {
+  fill: #bbb;
+}
+.minimap svg rect.odd {
+  fill: #eee;
+}
+.minimap .slider {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  border: 2px solid #f00;
+  height: 100%;
+  position: absolute;
+  left: 0;
+}
+

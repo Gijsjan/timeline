@@ -1,0 +1,21 @@
+pg = require 'pg'
+conString = "postgres://media:media@localhost/zkh"
+
+client = new pg.Client conString
+client.connect (err) ->
+	return console.error 'error fetching client from pool', err if err?
+
+express = require('express')
+app = express()
+
+app.get '/hospitals', (req, res) ->
+	console.log '/hospitals', new Date()
+	query = "SELECT * FROM concerns WHERE true"
+	client.query query, (err, result) ->
+		return err if err?
+		res.setHeader 'Content-Type', 'application/json'
+		res.end JSON.stringify result.rows
+		
+		
+	
+app.listen 3000, -> console.log 'Listening'
