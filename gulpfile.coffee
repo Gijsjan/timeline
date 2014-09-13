@@ -129,6 +129,7 @@ gulp.task 'watchify', ->
 	rebundle = ->
 		gutil.log 'Bundling'
 		bundler.bundle()
+			.on('error', gutil.log.bind(gutil, 'Browserify Error'))
 			.pipe(source('main.js'))
 			.pipe(gulp.dest('./compiled/js'))
 			.pipe(connect.reload())

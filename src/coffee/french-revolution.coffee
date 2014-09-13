@@ -1,4 +1,4 @@
-[
+module.exports = [
 	colspan: 2
 	rowspan: 1
 	date: new Date(1789, 6, 14)
@@ -8,7 +8,7 @@
 ,
 	colspan: 2
 	rowspan: 1
-	date: new Date(1789, 5 20)
+	date: new Date(1789, 5, 20)
 	text:
 		title: "Tennis Court Oath"
 		description: "The Tennis Court Oath (French: Serment du jeu de paume) was a pivotal event during the first days of the French Revolution. The Oath was a pledge signed by 576 of the 577 members from the Third Estate who were locked out of a meeting of the Estates-General on 20 June 1789. The only person who did not sign was Joseph Martin-Dauch, a politician who would not execute decisions not sanctioned by the king. They made a makeshift conference room inside a tennis court located in the Saint-Louis district of the city of Versailles, near the Palace of Versailles."

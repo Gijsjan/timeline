@@ -12,6 +12,7 @@ class Grid
 		@highestDate = new Date @entries[@entries.length-1].date
 		@highestDate.setDate 31
 
+
 		while @currentDate <= @highestDate		
 
 			currentDateEntries = @getEntriesOnCurrentDate()
@@ -24,6 +25,8 @@ class Grid
 				for entry, i in currentDateEntries
 					@addEntryPointsToGrid entry, startingRow, i
 					startingRow = startingRow + entry.rowspan
+			else
+				@addPoint @currentDate
 
 			# console.log @grid[year][month][day] if @dateToArray(@currentDate)[0] is 1804 and @dateToArray(@currentDate)[1] is 5 and @dateToArray(@currentDate)[2] is 24
 			@currentDate = @getNextDate @currentDate
@@ -80,7 +83,7 @@ class Grid
 		arr = []
 		entry = @entries[0]
 
-		while entry? and entry.date is @currentDate.toISOString()
+		while entry? and entry.date.getTime() is @currentDate.getTime()
 			entry = @entries.shift()
 			arr.push entry if entry?
 
@@ -126,7 +129,7 @@ class Grid
 
 		currentRow
 
-	addPoint: (date, row, value=-1) ->
+	addPoint: (date, row=0, value=-1) ->
 		@dateInGrid(date)[row] = value
 
 module.exports = Grid

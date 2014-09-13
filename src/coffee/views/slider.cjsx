@@ -3,54 +3,56 @@ React = require 'react'
 draggingOffset = null
 
 setResetTimeout = do ->
-    timer = null
-    (ms, cb, onResetFn) ->
+	timer = null
+	(ms, cb, onResetFn) ->
 
-      if timer?
-        onResetFn() if onResetFn?
-        clearTimeout timer
+		if timer?
+			onResetFn() if onResetFn?
+			clearTimeout timer
 
-      timer = setTimeout (->
-        # clearTimeout frees the memory, but does not clear the var. So we manually clear it,
-        # otherwise onResetFn will be called on the next call to timeoutWithReset.
-        timer = null
-        # Trigger the callback.
-        cb()
-      ), ms
+		timer = setTimeout (->
+			# clearTimeout frees the memory, but does not clear the var. So we manually clear it,
+			# otherwise onResetFn will be called on the next call to timeoutWithReset.
+			timer = null
+			# Trigger the callback.
+			cb()
+		), ms
 
 
-module.exports = React.createClass
-  componentDidMount: -> 
-    window.addEventListener 'mouseup', @handleMouseUp
-    window.addEventListener 'mousemove', @handleMouseMove
+Slider = React.createClass
+	componentDidMount: -> 
+		window.addEventListener 'mouseup', @_handleMouseUp
+		window.addEventListener 'mousemove', @_handleMouseMove
 
-  componentWillUnmount: ->
-    window.removeEventListener 'mouseup', @handleMouseUp
-    window.removeEventListener 'mousemove', @handleMouseMove 
+	componentWillUnmount: ->
+		window.removeEventListener 'mouseup', @_handleMouseUp
+		window.removeEventListener 'mousemove', @_handleMouseMove 
 
-  handleMouseDown: (ev) ->
-    nodeLeft = +(window.getComputedStyle(@getDOMNode()).left.slice(0, -2))
-    draggingOffset = ev.clientX - nodeLeft
+	render: ->
+		if @props.timelineWidth > 0
+			perc = window.innerWidth / @props.timelineWidth
+			console.log (perc * 100) + '%'
+			
+			@getDOMNode().style.width = (perc * 100) + '%'
 
-  handleMouseUp: (ev) ->
-    if draggingOffset?
-      @_handleMoveTimeline()
-      draggingOffset = null
+		<div className="slider" onMouseDown={@_handleMouseDown} onMouseUp={@_handleMouseUp} onMouseMove={@_handleMouseMove}></div>
 
-  handleMouseMove: (ev) ->
-    if draggingOffset?
-      @getDOMNode().style.left = (ev.clientX - draggingOffset) + 'px'
-      @_handleMoveTimeline()
+	_handleMouseDown: (ev) ->
+		nodeLeft = +(window.getComputedStyle(@getDOMNode()).left.slice(0, -2))
+		draggingOffset = ev.clientX - nodeLeft
 
-  render: ->
-    if @props.timelineWidth > 0
-      perc = window.innerWidth / @props.timelineWidth
-      console.log (perc * 100) + '%'
-      
-      @getDOMNode().style.width = (perc * 100) + '%'
+	_handleMouseUp: (ev) ->
+		if draggingOffset?
+			# @_handleMoveSlider()
+			draggingOffset = null
 
-    <div className="slider" onMouseDown={@handleMouseDown} onMouseUp={@handleMouseUp} onMouseMove={@handleMouseMove}></div>
+	_handleMouseMove: (ev) ->
+		if draggingOffset?
+			@getDOMNode().style.left = (ev.clientX - draggingOffset) + 'px'
+			@_handleMoveSlider()
 
-  _handleMoveTimeline: ->
-    nodeLeft = +(window.getComputedStyle(@getDOMNode()).left.slice(0, -2))
-    @props.onTimelineMove(nodeLeft / window.innerWidth)
+	_handleMoveSlider: ->
+		nodeLeft = +(window.getComputedStyle(@getDOMNode()).left.slice(0, -2))
+		@props.onSliderMove(nodeLeft / window.innerWidth)
+
+module.exports = Slider

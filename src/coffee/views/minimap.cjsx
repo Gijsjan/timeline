@@ -1,6 +1,6 @@
 React = require 'react'
 $ = require 'jquery'
-MinimapSlider = require './slider.cjsx'
+Slider = require './slider.cjsx'
 
 module.exports = React.createClass
   componentDidMount: ->
@@ -34,7 +34,7 @@ module.exports = React.createClass
     # console.log @props.timelineWidth
 
     <div className="minimap">
-      <MinimapSlider timelineWidth={@props.timelineWidth} onTimelineMove={@props.onTimelineMove} />
+      <Slider timelineWidth={@props.timelineWidth} onSliderMove={@props.onSliderMove} />
       <svg viewBox={viewBox} preserveAspectRatio="none" width="100%" height="100%">
         {background}
         {lines}

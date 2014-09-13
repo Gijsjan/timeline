@@ -1,59 +1,33 @@
-Backbone = require 'backbone'
 React = require 'react'
-$ = require 'jquery'
-_ = require 'underscore'
-# createGrid = require '../../create-compact-grid'
-Grid = require '../create-ordered-grid'
 
 Year = require './year.cjsx'
-Minimap = require './minimap.cjsx'
 
-class Entry extends Backbone.Model
-    idAttribute: '_id'
+Timeline = React.createClass
 
-class Entries extends Backbone.Collection
-    model: Entry
+	render: ->
+		firstDate = new Date(1789, 6, 1)
+		lastDate = new Date(1794, 6, 1)
+		startTimestamp = firstDate.getTime() + ((lastDate.getTime() - firstDate.getTime()) * @props.percentage)
+		startDate = new Date startTimestamp
 
-entries = null
+		endDate = new Date(startDate)
+		endDate.setDate(startDate.getDate() + 32)
 
-module.exports = React.createClass
+		gridSlice = {}
+		while endDate > startDate
+			[year, month, day] = [startDate.getFullYear(), startDate.getMonth(), startDate.getDate()]
+			gridSlice[year] ?= []
+			gridSlice[year][month] ?= []
+			gridSlice[year][month][day] ?= null
 
-  getInitialState: ->
-    entries: []
-    timelineWidth: 0
-  
-  componentWillMount: ->
-    $.get '/api/journal-entries', (response) =>
-        console.log response
-        entries = new Entries response
-        @setState entries: entries
+			startDate.setDate(startDate.getDate() + 1)
 
-  componentDidMount: ->
-    Backbone.on 'active-entry-change', @onActiveEntryChange, @
+		years = Object.keys(gridSlice).map (year) =>
+			months = gridSlice[year]
+			<Year grid={@props.grid} year={year} months={months} />
 
-    setTimeout (=>
-      @ulYears = @getDOMNode().querySelector('ul.years')
-      @setState timelineWidth: +(window.getComputedStyle(@ulYears).width.slice(0, -2))
-    ), 0
+		<ul className="years">
+			{years}
+		</ul>
 
-  onActiveEntryChange: (attrs, changedAttrs) ->   
-    entry = @state.entries.get(attrs.id)
-    entry.set changedAttrs
-
-    @setState entries: entries
-
-  handleTimelineMove: (perc) ->
-    left = perc * @state.timelineWidth
-    @ulYears.style.left = (-1 * left) + 'px'
-
-  render: ->
-    grid = if @state.entries.length > 0 then new Grid(@state.entries.toJSON()).grid else []
-
-    years = _.map grid, (months, year) => <Year year={year} months={months} />
-
-    <div className="timeline">
-        <ul className="years">
-          {years}
-        </ul>
-        <Minimap grid={grid} onTimelineMove={@handleTimelineMove} timelineWidth={@state.timelineWidth} />
-    </div>
+module.exports = Timeline

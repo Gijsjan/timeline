@@ -29569,6 +29569,8 @@ Grid = (function() {
           this.addEntryPointsToGrid(entry, startingRow, i);
           startingRow = startingRow + entry.rowspan;
         }
+      } else {
+        this.addPoint(this.currentDate);
       }
       this.currentDate = this.getNextDate(this.currentDate);
     }
@@ -29620,7 +29622,7 @@ Grid = (function() {
     var arr, entry;
     arr = [];
     entry = this.entries[0];
-    while ((entry != null) && entry.date === this.currentDate.toISOString()) {
+    while ((entry != null) && entry.date.getTime() === this.currentDate.getTime()) {
       entry = this.entries.shift();
       if (entry != null) {
         arr.push(entry);
@@ -29676,6 +29678,9 @@ Grid = (function() {
   };
 
   Grid.prototype.addPoint = function(date, row, value) {
+    if (row == null) {
+      row = 0;
+    }
     if (value == null) {
       value = -1;
     }
@@ -29691,7 +29696,52 @@ module.exports = Grid;
 
 
 },{"underscore":138}],141:[function(require,module,exports){
-var ActiveEntry, Backbone, React, Router, Timeline, done;
+module.exports = [
+  {
+    colspan: 2,
+    rowspan: 1,
+    date: new Date(1789, 6, 14),
+    text: {
+      title: "Storming of the Bastille",
+      description: "The Storming of the Bastille occurred in Paris, France on the morning of 14 July 1789. The medieval fortress and prison in Paris known as the Bastille represented royal authority in the center of Paris. The prison only contained seven inmates at the time of its storming but was a symbol of the abuses of the monarchy: its fall was the flashpoint of the French Revolution."
+    }
+  }, {
+    colspan: 2,
+    rowspan: 1,
+    date: new Date(1789, 5, 20),
+    text: {
+      title: "Tennis Court Oath",
+      description: "The Tennis Court Oath (French: Serment du jeu de paume) was a pivotal event during the first days of the French Revolution. The Oath was a pledge signed by 576 of the 577 members from the Third Estate who were locked out of a meeting of the Estates-General on 20 June 1789. The only person who did not sign was Joseph Martin-Dauch, a politician who would not execute decisions not sanctioned by the king. They made a makeshift conference room inside a tennis court located in the Saint-Louis district of the city of Versailles, near the Palace of Versailles."
+    }
+  }, {
+    colspan: 6,
+    rowspan: 3,
+    date: new Date(1789, 7, 26),
+    text: {
+      title: "Declaration of the Rights of Man and of the Citizen",
+      description: "The Declaration of the Rights of Man and of the Citizen (French: Déclaration des droits de l'homme et du citoyen), passed by France's National Constituent Assembly in August 1789, is a fundamental document of the French Revolution and in the history of human rights.[1] It defines the individual and collective rights of all the estates of the realm as universal."
+    }
+  }, {
+    colspan: 2,
+    rowspan: 1,
+    date: new Date(1790, 6, 14),
+    text: {
+      title: "Fête de la Fédération"
+    }
+  }, {
+    colspan: 2,
+    rowspan: 1,
+    date: new Date(1794, 5, 8),
+    text: {
+      title: "Festival of the Supreme Being"
+    }
+  }
+];
+
+
+
+},{}],142:[function(require,module,exports){
+var ActiveEntry, App, Backbone, React, Router, done;
 
 Backbone = require('backbone');
 
@@ -29701,26 +29751,25 @@ window.React = React;
 
 Router = require('./router.cjsx');
 
-Timeline = require('./views/timeline.cjsx');
+App = require('./views/app.cjsx');
 
 ActiveEntry = require('./views/entry-active.cjsx');
 
 done = function() {
   var router;
-  console.log('done');
   router = new Router();
   return Backbone.history.start({
     pushState: true
   });
 };
 
-React.renderComponent(Timeline(null), document.getElementById('timeline'));
+React.renderComponent(App(null), document.getElementById('timeline'));
 
 React.renderComponent(ActiveEntry(null), document.getElementById('active-entry'), done);
 
 
 
-},{"./router.cjsx":142,"./views/entry-active.cjsx":144,"./views/timeline.cjsx":149,"backbone":1,"react":137}],142:[function(require,module,exports){
+},{"./router.cjsx":143,"./views/app.cjsx":144,"./views/entry-active.cjsx":146,"backbone":1,"react":137}],143:[function(require,module,exports){
 var ActiveEntry, Backbone, Router,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -29758,7 +29807,89 @@ module.exports = Router;
 
 
 
-},{"./views/entry-active.cjsx":144,"backbone":1}],143:[function(require,module,exports){
+},{"./views/entry-active.cjsx":146,"backbone":1}],144:[function(require,module,exports){
+var $, Backbone, Entries, Entry, Grid, Minimap, React, Timeline, Year, data, entries, _,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+Backbone = require('backbone');
+
+React = require('react');
+
+$ = require('jquery');
+
+_ = require('underscore');
+
+Grid = require('../create-ordered-grid');
+
+Timeline = require('./timeline.cjsx');
+
+Year = require('./year.cjsx');
+
+Minimap = require('./minimap.cjsx');
+
+data = require('../french-revolution');
+
+Entry = (function(_super) {
+  __extends(Entry, _super);
+
+  function Entry() {
+    return Entry.__super__.constructor.apply(this, arguments);
+  }
+
+  Entry.prototype.idAttribute = '_id';
+
+  return Entry;
+
+})(Backbone.Model);
+
+Entries = (function(_super) {
+  __extends(Entries, _super);
+
+  function Entries() {
+    return Entries.__super__.constructor.apply(this, arguments);
+  }
+
+  Entries.prototype.model = Entry;
+
+  return Entries;
+
+})(Backbone.Collection);
+
+entries = null;
+
+module.exports = React.createClass({
+  getInitialState: function() {
+    return {
+      timelineWidth: window.innerWidth,
+      grid: new Grid(data).grid,
+      percentage: 0,
+      timelineWidth: 0
+    };
+  },
+  handleSliderMove: function(perc) {
+    return this.setState({
+      percentage: perc
+    });
+  },
+  render: function() {
+    return React.DOM.div({
+      "className": "timeline"
+    }, Timeline({
+      "grid": this.state.grid,
+      "percentage": this.state.percentage,
+      "timelineWidth": this.state.timelineWidth
+    }), Minimap({
+      "grid": this.state.grid,
+      "onSliderMove": this.handleSliderMove,
+      "timelineWidth": this.state.timelineWidth
+    }));
+  }
+});
+
+
+
+},{"../create-ordered-grid":140,"../french-revolution":141,"./minimap.cjsx":148,"./timeline.cjsx":151,"./year.cjsx":152,"backbone":1,"jquery":2,"react":137,"underscore":138}],145:[function(require,module,exports){
 var Entry, React;
 
 React = require('react');
@@ -29767,8 +29898,9 @@ Entry = require('./entry.cjsx');
 
 module.exports = React.createClass({
   render: function() {
-    var entries;
-    entries = this.props.entries.map((function(_this) {
+    var entries, entries2;
+    entries2 = this.props.grid[this.props.year][this.props.month][this.props.day];
+    entries = entries2.map((function(_this) {
       return function(data, row) {
         if (data !== -1) {
           return Entry({
@@ -29788,7 +29920,7 @@ module.exports = React.createClass({
 
 
 
-},{"./entry.cjsx":145,"react":137}],144:[function(require,module,exports){
+},{"./entry.cjsx":147,"react":137}],146:[function(require,module,exports){
 var $, Backbone, React, _;
 
 React = require('react');
@@ -29903,7 +30035,7 @@ module.exports = React.createClass({
 
 
 
-},{"backbone":1,"jquery":2,"react":137,"underscore":138}],145:[function(require,module,exports){
+},{"backbone":1,"jquery":2,"react":137,"underscore":138}],147:[function(require,module,exports){
 var $, Backbone, React;
 
 React = require('react');
@@ -29930,14 +30062,14 @@ module.exports = React.createClass({
 
 
 
-},{"backbone":1,"jquery":2,"react":137}],146:[function(require,module,exports){
-var $, MinimapSlider, React;
+},{"backbone":1,"jquery":2,"react":137}],148:[function(require,module,exports){
+var $, React, Slider;
 
 React = require('react');
 
 $ = require('jquery');
 
-MinimapSlider = require('./slider.cjsx');
+Slider = require('./slider.cjsx');
 
 module.exports = React.createClass({
   componentDidMount: function() {
@@ -30000,9 +30132,9 @@ module.exports = React.createClass({
     viewBox = "0 0 " + lines.length + " " + max;
     return React.DOM.div({
       "className": "minimap"
-    }, MinimapSlider({
+    }, Slider({
       "timelineWidth": this.props.timelineWidth,
-      "onTimelineMove": this.props.onTimelineMove
+      "onSliderMove": this.props.onSliderMove
     }), React.DOM.svg({
       "viewBox": viewBox,
       "preserveAspectRatio": "none",
@@ -30014,27 +30146,31 @@ module.exports = React.createClass({
 
 
 
-},{"./slider.cjsx":148,"jquery":2,"react":137}],147:[function(require,module,exports){
-var Day, React;
+},{"./slider.cjsx":150,"jquery":2,"react":137}],149:[function(require,module,exports){
+var Day, React, monthNames;
 
 React = require('react');
 
 Day = require('./day.cjsx');
 
+monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
 module.exports = React.createClass({
   render: function() {
     var days;
     days = this.props.days.map((function(_this) {
-      return function(entries, i) {
+      return function(value, index) {
         return Day({
-          "entries": entries,
-          "day": i
+          "grid": _this.props.grid,
+          "year": _this.props.year,
+          "month": _this.props.month,
+          "day": index
         });
       };
     })(this));
     return React.DOM.li({
       "className": "month"
-    }, React.DOM.h3(null, this.props.month), React.DOM.ul({
+    }, React.DOM.h3(null, monthNames[this.props.month]), React.DOM.ul({
       "className": "days"
     }, days));
   }
@@ -30042,8 +30178,8 @@ module.exports = React.createClass({
 
 
 
-},{"./day.cjsx":143,"react":137}],148:[function(require,module,exports){
-var React, draggingOffset, setResetTimeout;
+},{"./day.cjsx":145,"react":137}],150:[function(require,module,exports){
+var React, Slider, draggingOffset, setResetTimeout;
 
 React = require('react');
 
@@ -30066,31 +30202,14 @@ setResetTimeout = (function() {
   };
 })();
 
-module.exports = React.createClass({
+Slider = React.createClass({
   componentDidMount: function() {
-    window.addEventListener('mouseup', this.handleMouseUp);
-    return window.addEventListener('mousemove', this.handleMouseMove);
+    window.addEventListener('mouseup', this._handleMouseUp);
+    return window.addEventListener('mousemove', this._handleMouseMove);
   },
   componentWillUnmount: function() {
-    window.removeEventListener('mouseup', this.handleMouseUp);
-    return window.removeEventListener('mousemove', this.handleMouseMove);
-  },
-  handleMouseDown: function(ev) {
-    var nodeLeft;
-    nodeLeft = +(window.getComputedStyle(this.getDOMNode()).left.slice(0, -2));
-    return draggingOffset = ev.clientX - nodeLeft;
-  },
-  handleMouseUp: function(ev) {
-    if (draggingOffset != null) {
-      this._handleMoveTimeline();
-      return draggingOffset = null;
-    }
-  },
-  handleMouseMove: function(ev) {
-    if (draggingOffset != null) {
-      this.getDOMNode().style.left = (ev.clientX - draggingOffset) + 'px';
-      return this._handleMoveTimeline();
-    }
+    window.removeEventListener('mouseup', this._handleMouseUp);
+    return window.removeEventListener('mousemove', this._handleMouseMove);
   },
   render: function() {
     var perc;
@@ -30101,142 +30220,95 @@ module.exports = React.createClass({
     }
     return React.DOM.div({
       "className": "slider",
-      "onMouseDown": this.handleMouseDown,
-      "onMouseUp": this.handleMouseUp,
-      "onMouseMove": this.handleMouseMove
+      "onMouseDown": this._handleMouseDown,
+      "onMouseUp": this._handleMouseUp,
+      "onMouseMove": this._handleMouseMove
     });
   },
-  _handleMoveTimeline: function() {
+  _handleMouseDown: function(ev) {
     var nodeLeft;
     nodeLeft = +(window.getComputedStyle(this.getDOMNode()).left.slice(0, -2));
-    return this.props.onTimelineMove(nodeLeft / window.innerWidth);
+    return draggingOffset = ev.clientX - nodeLeft;
+  },
+  _handleMouseUp: function(ev) {
+    if (draggingOffset != null) {
+      return draggingOffset = null;
+    }
+  },
+  _handleMouseMove: function(ev) {
+    if (draggingOffset != null) {
+      this.getDOMNode().style.left = (ev.clientX - draggingOffset) + 'px';
+      return this._handleMoveSlider();
+    }
+  },
+  _handleMoveSlider: function() {
+    var nodeLeft;
+    nodeLeft = +(window.getComputedStyle(this.getDOMNode()).left.slice(0, -2));
+    return this.props.onSliderMove(nodeLeft / window.innerWidth);
   }
 });
 
+module.exports = Slider;
 
 
-},{"react":137}],149:[function(require,module,exports){
-var $, Backbone, Entries, Entry, Grid, Minimap, React, Year, entries, _,
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-Backbone = require('backbone');
+},{"react":137}],151:[function(require,module,exports){
+var React, Timeline, Year;
 
 React = require('react');
 
-$ = require('jquery');
-
-_ = require('underscore');
-
-Grid = require('../create-ordered-grid');
-
 Year = require('./year.cjsx');
 
-Minimap = require('./minimap.cjsx');
-
-Entry = (function(_super) {
-  __extends(Entry, _super);
-
-  function Entry() {
-    return Entry.__super__.constructor.apply(this, arguments);
-  }
-
-  Entry.prototype.idAttribute = '_id';
-
-  return Entry;
-
-})(Backbone.Model);
-
-Entries = (function(_super) {
-  __extends(Entries, _super);
-
-  function Entries() {
-    return Entries.__super__.constructor.apply(this, arguments);
-  }
-
-  Entries.prototype.model = Entry;
-
-  return Entries;
-
-})(Backbone.Collection);
-
-entries = null;
-
-module.exports = React.createClass({
-  getInitialState: function() {
-    return {
-      entries: [],
-      timelineWidth: 0
-    };
-  },
-  componentWillMount: function() {
-    return $.get('/api/journal-entries', (function(_this) {
-      return function(response) {
-        console.log(response);
-        entries = new Entries(response);
-        return _this.setState({
-          entries: entries
-        });
-      };
-    })(this));
-  },
-  componentDidMount: function() {
-    Backbone.on('active-entry-change', this.onActiveEntryChange, this);
-    return setTimeout(((function(_this) {
-      return function() {
-        _this.ulYears = _this.getDOMNode().querySelector('ul.years');
-        return _this.setState({
-          timelineWidth: +(window.getComputedStyle(_this.ulYears).width.slice(0, -2))
-        });
-      };
-    })(this)), 0);
-  },
-  onActiveEntryChange: function(attrs, changedAttrs) {
-    var entry;
-    entry = this.state.entries.get(attrs.id);
-    entry.set(changedAttrs);
-    return this.setState({
-      entries: entries
-    });
-  },
-  handleTimelineMove: function(perc) {
-    var left;
-    left = perc * this.state.timelineWidth;
-    return this.ulYears.style.left = (-1 * left) + 'px';
-  },
+Timeline = React.createClass({
   render: function() {
-    var grid, years;
-    grid = this.state.entries.length > 0 ? new Grid(this.state.entries.toJSON()).grid : [];
-    years = _.map(grid, (function(_this) {
-      return function(months, year) {
+    var day, endDate, firstDate, gridSlice, lastDate, month, startDate, startTimestamp, year, years, _base, _base1, _ref;
+    firstDate = new Date(1789, 6, 1);
+    lastDate = new Date(1794, 6, 1);
+    startTimestamp = firstDate.getTime() + ((lastDate.getTime() - firstDate.getTime()) * this.props.percentage);
+    startDate = new Date(startTimestamp);
+    endDate = new Date(startDate);
+    endDate.setDate(startDate.getDate() + 32);
+    gridSlice = {};
+    while (endDate > startDate) {
+      _ref = [startDate.getFullYear(), startDate.getMonth(), startDate.getDate()], year = _ref[0], month = _ref[1], day = _ref[2];
+      if (gridSlice[year] == null) {
+        gridSlice[year] = [];
+      }
+      if ((_base = gridSlice[year])[month] == null) {
+        _base[month] = [];
+      }
+      if ((_base1 = gridSlice[year][month])[day] == null) {
+        _base1[day] = null;
+      }
+      startDate.setDate(startDate.getDate() + 1);
+    }
+    years = Object.keys(gridSlice).map((function(_this) {
+      return function(year) {
+        var months;
+        months = gridSlice[year];
         return Year({
+          "grid": _this.props.grid,
           "year": year,
           "months": months
         });
       };
     })(this));
-    return React.DOM.div({
-      "className": "timeline"
-    }, React.DOM.ul({
+    return React.DOM.ul({
       "className": "years"
-    }, years), Minimap({
-      "grid": grid,
-      "onTimelineMove": this.handleTimelineMove,
-      "timelineWidth": this.state.timelineWidth
-    }));
+    }, years);
   }
 });
 
+module.exports = Timeline;
 
 
-},{"../create-ordered-grid":140,"./minimap.cjsx":146,"./year.cjsx":150,"backbone":1,"jquery":2,"react":137,"underscore":138}],150:[function(require,module,exports){
-var Month, React, monthNames;
+
+},{"./year.cjsx":152,"react":137}],152:[function(require,module,exports){
+var Month, React;
 
 React = require('react');
 
 Month = require('./month.cjsx');
-
-monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 module.exports = React.createClass({
   render: function() {
@@ -30244,8 +30316,10 @@ module.exports = React.createClass({
     months = this.props.months.map((function(_this) {
       return function(days, i) {
         return Month({
-          "days": days,
-          "month": monthNames[i]
+          "grid": _this.props.grid,
+          "year": _this.props.year,
+          "month": i,
+          "days": days
         });
       };
     })(this));
@@ -30259,4 +30333,4 @@ module.exports = React.createClass({
 
 
 
-},{"./month.cjsx":147,"react":137}]},{},[141])
+},{"./month.cjsx":149,"react":137}]},{},[142])

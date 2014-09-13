@@ -1,13 +1,16 @@
 React = require 'react'
 Day = require './day.cjsx'
 
-module.exports = React.createClass
-  render: ->
-    days = @props.days.map (entries, i) => <Day entries={entries} day={i} />
+monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
-    <li className="month">
-        <h3>{@props.month}</h3>
-        <ul className="days">
-            {days}
-        </ul>
-    </li>
+module.exports = React.createClass
+	render: ->
+		days = @props.days.map (value, index) => 
+			<Day grid={@props.grid} year={@props.year} month={@props.month} day={index} />
+
+		<li className="month">
+			<h3>{monthNames[@props.month]}</h3>
+			<ul className="days">
+				{days}
+			</ul>
+		</li>

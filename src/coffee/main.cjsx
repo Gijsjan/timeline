@@ -3,7 +3,7 @@ React = require 'react'
 window.React = React
 
 Router = require './router.cjsx'
-Timeline = require './views/timeline.cjsx'
+App = require './views/app.cjsx'
 ActiveEntry = require './views/entry-active.cjsx'
 
 done = ->
@@ -11,7 +11,7 @@ done = ->
 	Backbone.history.start pushState: true
 
 React.renderComponent(
-	<Timeline />,
+	<App />,
 	document.getElementById('timeline')
 );
 
