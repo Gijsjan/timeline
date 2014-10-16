@@ -6,8 +6,8 @@ module.exports = React.createClass
 		months = @props.months.map (days, i) => 
 			<Month grid={@props.grid} year={@props.year} month={i} days={days} />
 
-		<li className="year">
-			<h2>{@props.year}</h2>
+		# <h2>{@props.year}</h2>
+		<li className="year" data-year={@props.year}>
 			<ul className="months">
 				{months}
 			</ul>

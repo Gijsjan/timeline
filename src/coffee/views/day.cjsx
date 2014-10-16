@@ -3,7 +3,6 @@ Entry = require './entry.cjsx'
 
 module.exports = React.createClass
 	render: ->
-		# console.log @props
 		entries2 = @props.grid[@props.year][@props.month][@props.day]
 		entries = entries2.map (data, row) =>
 			if data isnt -1

@@ -2,12 +2,21 @@ _ = require 'underscore'
 
 class Grid
 	constructor: (@entries) ->
+		for entry in @entries
+			if typeof entry.date is 'string'
+				entry.date = new Date(entry.date)
+				entry.date.setHours(0)
+				entry.date.setMinutes(0)
+				entry.date.setSeconds(0)
+
+		@originalData = _.clone(@entries)
+
 		@grid = {}
 		row = null
 		entryIndex = 0
-
 		@currentDate = new Date @entries[0].date
 		@currentDate.setDate 1
+		@firstDate = new Date(@currentDate)
 
 		@highestDate = new Date @entries[@entries.length-1].date
 		@highestDate.setDate 31
@@ -32,7 +41,12 @@ class Grid
 			@currentDate = @getNextDate @currentDate
 		
 		window.grid = @grid
-		# @grid
+
+	getData: ->
+		firstDate: @firstDate
+		lastDate: @highestDate
+		originalData: @originalData
+		grid: @grid
 
 	addEntryPointsToGrid1: (entry, row, i) ->
 		currentRow = row + i
@@ -83,9 +97,12 @@ class Grid
 		arr = []
 		entry = @entries[0]
 
+		# FIXME Shifted entry is used in the while, but the next entry should be used.
 		while entry? and entry.date.getTime() is @currentDate.getTime()
 			entry = @entries.shift()
 			arr.push entry if entry?
+
+			entry = @entries[0]
 
 		arr
 

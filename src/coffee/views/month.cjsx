@@ -8,8 +8,8 @@ module.exports = React.createClass
 		days = @props.days.map (value, index) => 
 			<Day grid={@props.grid} year={@props.year} month={@props.month} day={index} />
 
+		# <h3>{monthNames[@props.month]}</h3>
 		<li className="month">
-			<h3>{monthNames[@props.month]}</h3>
 			<ul className="days">
 				{days}
 			</ul>

@@ -1,6 +1,7 @@
 .minimap
 	fixed bottom 0 left 0 right 0
 	height 10%
+	background #EEE
 
 	svg
 		rect
@@ -13,9 +14,28 @@
 		rect.odd
 			fill #EEE
 
-	.slider
-		box-sizing border-box
-		border 2px solid red
-		height 100%
-		position absolute
-		left 0
+	.slider-container
+		.leftOfSlider, .aboveSlider, .slider, .beneathSlider, .rightOfSlider
+			position absolute
+
+		.leftOfSlider, .rightOfSlider
+			height 100%
+
+		.leftOfSlider, .rightOfSlider, .aboveSlider, .beneathSlider
+			background rgba(0, 0, 0, 0.2)
+
+		.leftOfSlider
+			left 0
+
+		.slider
+			top 0
+			left 0
+			box-sizing border-box
+			border 2px solid #444
+
+			// Do not increase! The opacity of .leftOfSlider and .rightOfSlider
+			// will not completely cover the space left by the border-radius.
+			border-radius 6px
+
+		.rightOfSlider
+			right 0

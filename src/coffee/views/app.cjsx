@@ -9,31 +9,45 @@ Timeline = require './timeline.cjsx'
 Year = require './year.cjsx'
 Minimap = require './minimap.cjsx'
 
-data = require '../french-revolution'
+data = require '../../../backend/metadata.json'
+# data = require '../french-revolution'
 
 class Entry extends Backbone.Model
-		idAttribute: '_id'
+	idAttribute: '_id'
 
 class Entries extends Backbone.Collection
-		model: Entry
-
-entries = null
+	model: Entry
 
 module.exports = React.createClass
 
 	getInitialState: ->
-		timelineWidth: window.innerWidth
-		grid: new Grid(data).grid
+		grid = new Grid(data)
+		gridData = grid.getData()
+
+		data: gridData.originalData
+		firstDate: gridData.firstDate
+		lastDate: gridData.lastDate
+		timelineWidth: document.documentElement.clientWidth
 		percentage: 0
 		timelineWidth: 0
+		grid: gridData.grid
 
 	handleSliderMove: (perc) ->
 		@setState percentage: perc
 
-	render: ->
-		# years = _.map @state.grid, (months, year) => <Year year={year} months={months} />
 
+	render: ->
 		<div className="timeline">
-			<Timeline grid={@state.grid} percentage={@state.percentage} timelineWidth={@state.timelineWidth} />
-			<Minimap grid={@state.grid} onSliderMove={@handleSliderMove} timelineWidth={@state.timelineWidth} />
+			<Timeline 
+				data={@state.data} 
+				grid={@state.grid} 
+				percentage={@state.percentage}
+				firstDate={@state.firstDate}
+				lastDate={@state.lastDate} />
+			<Minimap 
+				data={@state.data} 
+				grid={@state.grid} 
+				onSliderMove={@handleSliderMove}
+				firstDate={@state.firstDate}
+				lastDate={@state.lastDate} />
 		</div>

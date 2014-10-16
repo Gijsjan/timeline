@@ -13,6 +13,7 @@ module.exports = (connect, options) ->
 			'.json': 'application/json'
 			'.gif': 'image/gif'
 			'.jpg': 'image/jpeg'
+			'.JPG': 'image/jpeg'
 			'.jpeg': 'image/jpeg'
 			'.png': 'image/png'
 			'.ico': 'image/x-icon'

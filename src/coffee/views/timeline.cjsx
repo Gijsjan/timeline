@@ -5,16 +5,16 @@ Year = require './year.cjsx'
 Timeline = React.createClass
 
 	render: ->
-		firstDate = new Date(1789, 6, 1)
-		lastDate = new Date(1794, 6, 1)
-		startTimestamp = firstDate.getTime() + ((lastDate.getTime() - firstDate.getTime()) * @props.percentage)
+		startTimestamp = @props.firstDate.getTime() + ((@props.lastDate.getTime() - @props.firstDate.getTime()) * @props.percentage)
 		startDate = new Date startTimestamp
 
 		endDate = new Date(startDate)
-		endDate.setDate(startDate.getDate() + 32)
+		endDate.setDate(startDate.getDate() + 62)
+
+		endDate = @props.lastDate if endDate > @props.lastDate
 
 		gridSlice = {}
-		while endDate > startDate
+		while endDate >= startDate
 			[year, month, day] = [startDate.getFullYear(), startDate.getMonth(), startDate.getDate()]
 			gridSlice[year] ?= []
 			gridSlice[year][month] ?= []
