@@ -1,8 +1,5 @@
 React = require 'react'
-$ = require 'jquery'
-_ = require 'underscore'
 Backbone = require 'backbone'
-Backbone.$ = $
 
 module.exports = React.createClass
   getInitialState: ->

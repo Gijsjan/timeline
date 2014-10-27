@@ -1,24 +1,33 @@
 gulp = require 'gulp'
 gutil = require 'gulp-util'
-connect = require 'gulp-connect'
-jade = require 'gulp-jade'
+# connect = require 'gulp-connect'
+# jade = require 'gulp-jade'
 concat = require 'gulp-concat'
 clean = require 'gulp-clean'
 stylus = require 'gulp-stylus'
-browserify = require 'gulp-browserify'
 rename = require 'gulp-rename'
-connectRewrite = require './connect-rewrite'
-cache = require 'gulp-cached'
-plumber = require 'gulp-plumber'
 uglify = require 'gulp-uglify'
 minifyCss = require 'gulp-minify-css'
-source = require 'vinyl-source-stream'
+
+nib = require 'nib'
+
+browserify = require 'browserify'
 watchify = require 'watchify'
-reactify = require 'reactify'
-brfs = require 'brfs'
-bodyParser = require 'body-parser'
-psi = require 'psi'
+# connectRewrite = require './connect-rewrite'
+source = require 'vinyl-source-stream'
+# reactify = require 'reactify'
+# brfs = require 'brfs'
+# bodyParser = require 'body-parser'
+# psi = require 'psi'
 # console.log bodyParser()
+async = require 'async'
+rimraf = require 'rimraf'
+
+browserSync = require 'browser-sync'
+reload = browserSync.reload
+proxy = require 'proxy-middleware'
+modRewrite = require 'connect-modrewrite'
+url = require 'url'
 
 compiledDir = './compiled'
 distDir = './dist'
@@ -39,45 +48,81 @@ paths =
 		'./src/stylus/**/*.styl'
 	]
 
-gulp.task 'connect', connect.server
-	root: compiledDir,
-	port: 9000,
-	livereload: true
-	middleware: (connect, options) -> [bodyParser(), connectRewrite(connect, options)]
+gulp.task 'server', ['watch', 'watchify'], ->
+	proxyOptions = url.parse('http://localhost:3000')
+	proxyOptions.route = '/api'
+	
+	browserSync.init null,
+		notify: false
+		server:
+			baseDir: compiledDir
+			middleware: [
+				proxy(proxyOptions),
+				modRewrite([
+					'^[^\\.]*$ /index.html [L]'
+				])
+			]
 
-gulp.task 'connect-dist', connect.server
-	root: distDir,
-	port: 9002,
-	middleware: connectRewrite
+gulp.task 'link', (done) ->
+	removeModules = (cb) ->
+		modulePaths = cfg['local-modules'].map (module) -> "./node_modules/#{module}"
+		async.each modulePaths , rimraf, (err) -> cb()
+
+	linkModules = (cb) ->
+		moduleCommands = cfg['local-modules'].map (module) -> "npm link #{module}"
+		async.each moduleCommands, exec, (err) -> cb()
+
+	async.series [removeModules, linkModules], (err) ->
+		return gutil.log err if err?
+		done()
+
+gulp.task 'unlink', (done) ->
+	unlinkModules = (cb) ->
+		moduleCommands = cfg['local-modules'].map (module) -> "npm unlink #{module}"
+		async.each moduleCommands, exec, (err) -> cb()
+
+	installModules = (cb) ->
+		exec 'npm i', cb
+
+	async.series [unlinkModules, installModules], (err) ->
+		return gutil.log err if err?
+		done()
+
+# gulp.task 'connect', connect.server
+# 	root: compiledDir,
+# 	port: 9000,
+# 	livereload: true
+# 	middleware: (connect, options) -> [bodyParser(), connectRewrite(connect, options)]
+
+# gulp.task 'connect-dist', connect.server
+# 	root: distDir,
+# 	port: 9002,
+# 	middleware: connectRewrite
 
 gulp.task 'jade', ->
 	gulp.src(paths.jade)
-		.pipe(plumber())
 		.pipe(jade())
 		.pipe(gulp.dest(compiledDir))
-		.pipe(connect.reload())
+		.pipe(reload())
 
-gulp.task 'browserify', ->
-	gulp.src('./src/coffee/main.cjsx', read: false)
-		.pipe(plumber())
-		.pipe(cache('browserify'))
-		.pipe(browserify(
-			transform: ['coffee-reactify']
-			# extensions: ['.coffee', '.jade']
-		))
-		.pipe(rename(extname:'.js'))
-		.pipe(gulp.dest(compiledDir+'/js'))
-		.pipe(connect.reload())
+# gulp.task 'browserify', ->
+# 	gulp.src('./src/coffee/main.cjsx', read: false)
+# 		.pipe(browserify(
+# 			transform: ['coffee-reactify']
+# 			# extensions: ['.coffee', '.jade']
+# 		))
+# 		.pipe(rename(extname:'.js'))
+# 		.pipe(gulp.dest(compiledDir+'/js'))
+# 		.pipe(reload())
 
 gulp.task 'stylus', ->
 	gulp.src(paths.stylus)
-		.pipe(plumber())
 		.pipe(stylus(
 			use: ['nib']
 		))
 		.pipe(concat('main.css'))
 		.pipe(gulp.dest(compiledDir+'/css'))
-		.pipe(connect.reload())
+		.pipe(reload(stream: true))
 
 gulp.task 'uglify', ->
 	gulp.src(compiledDir+'/js/main.js')
@@ -116,33 +161,62 @@ gulp.task 'watch', ->
 	gulp.watch [paths.jade], ['jade']
 	gulp.watch [paths.stylus], ['stylus']
 
-gulp.task 'watchify', ->
-	bundler = watchify
-		entries: './src/coffee/main.cjsx'
-		extensions: ['.coffee']
+# gulp.task 'watchify', ->
+# 	bundler = watchify
+# 		entries: './src/coffee/main.cjsx'
+# 		extensions: ['.coffee']
 
-	# bundler.transform('coffeeify')
-	# bundler.transform('jadeify')
-	# bundler.transform('brfs')
+# 	# bundler.transform('coffeeify')
+# 	# bundler.transform('jadeify')
+# 	# bundler.transform('brfs')
+# 	bundler.transform('coffee-reactify')
+
+# 	rebundle = ->
+# 		gutil.log 'Bundling'
+# 		bundler.bundle()
+# 			.on('error', gutil.log.bind(gutil, 'Browserify Error'))
+# 			.pipe(source('main.js'))
+# 			.pipe(gulp.dest('./compiled/js'))
+# 			.pipe(reload())
+
+# 	bundler.on('update', rebundle)
+
+# 	rebundle()
+
+
+createBundle = (watch=false) ->
+	args =
+		entries: './src/coffee/main.cjsx'
+		extensions: ['.cjsx', '.coffee']
+		debug: true
+
+	bundler = if watch then watchify(args) else browserify(args)
+
+	#  bundler.transform('coffeeify')
 	bundler.transform('coffee-reactify')
+	# bundler.transform('envify')
 
 	rebundle = ->
-		gutil.log 'Bundling'
+		gutil.log('Watchify rebundling') if watch
 		bundler.bundle()
-			.on('error', gutil.log.bind(gutil, 'Browserify Error'))
-			.pipe(source('main.js'))
-			.pipe(gulp.dest('./compiled/js'))
-			.pipe(connect.reload())
+			.on('error', ((err) -> gutil.log("Bundling error ::: "+err)))
+			.pipe(source("main.js"))
+			.pipe(gulp.dest("#{compiledDir}/js"))
+			.pipe(reload({stream:true, once: true}))
+			.on('error', gutil.log)
 
 	bundler.on('update', rebundle)
 
 	rebundle()
 
-gulp.task 'default', ['connect', 'watch', 'watchify']
+gulp.task 'browserify', -> createBundle false
+gulp.task 'watchify', -> createBundle true
 
-gulp.task 'psi', (done) ->
-	opts =
-		nokey: 'true'
-		url: 'localhost:900'
-		strategy: 'desktop'
-	psi opts, done
+gulp.task 'default', ['server']
+
+# gulp.task 'psi', (done) ->
+# 	opts =
+# 		nokey: 'true'
+# 		url: 'localhost:900'
+# 		strategy: 'desktop'
+# 	psi opts, done

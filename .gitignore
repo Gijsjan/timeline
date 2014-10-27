@@ -1,3 +1,5 @@
 compiled
 backend/images
 backend/imagesTmp
+backend/imagesTmp2
+node_modules

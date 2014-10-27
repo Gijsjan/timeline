@@ -1,7 +1,4 @@
 React = require 'react'
-$ = require 'jquery'
-Backbone = require 'backbone'
-Backbone.$ = $
 
 module.exports = React.createClass
   handleClick: (ev) ->

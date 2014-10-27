@@ -1,6 +1,10 @@
+# TODO remove Backbone and underscore dep
+# TODO integrate flux
+# TODO slider width works, but height doesn't
+
 Backbone = require 'backbone'
 React = require 'react'
-window.React = React
+console.log React
 
 Router = require './router.cjsx'
 App = require './views/app.cjsx'

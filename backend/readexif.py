@@ -4,8 +4,10 @@ import os, glob, json
 from operator import itemgetter
 from datetime import datetime
 
-def addMetadata(pic):
-	img = Image.open(pic)
+imageDir = 'images'
+
+def addMetadata(picPath):
+	img = Image.open(picPath)
 
 	exif_data = img._getexif()
 
@@ -15,14 +17,14 @@ def addMetadata(pic):
 		if k in TAGS
 	}
 
-	print(exif)
+	print(exif['DateTimeOriginal'])
 
 	date = [int(y) for x in exif['DateTimeOriginal'].split(' ') for y in x.split(':')]
 	date = datetime(date[0], date[1], date[2], date[3], date[4], date[5])
 
 	data = {
 		'image': {
-			'src': pic,
+			'src': picPath,
 			'width': exif['ExifImageWidth'],
 			'height': exif['ExifImageHeight'],
 		},
@@ -32,11 +34,11 @@ def addMetadata(pic):
 	}
 
 	img.thumbnail((80, 80))
-	img.save('../compiled/'+pic, "JPEG", quality=80, optimize=True, progressive=True)
+	img.save('../compiled/'+picPath, "JPEG", quality=80, optimize=True, progressive=True)
 
 	return data
 
-metadata = [addMetadata(pic) for pic in glob.glob(os.path.join('images', '*'))]
+metadata = [addMetadata(picPath) for picPath in glob.glob(os.path.join(imageDir, '*'))]
 metadata = sorted(metadata, key=itemgetter('date')) 
 
 jsonFile = open("metadata.json", "w")

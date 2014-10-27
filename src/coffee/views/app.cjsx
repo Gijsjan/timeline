@@ -1,7 +1,5 @@
 Backbone = require 'backbone'
 React = require 'react'
-$ = require 'jquery'
-_ = require 'underscore'
 # createGrid = require '../../create-compact-grid'
 Grid = require '../create-ordered-grid'
 

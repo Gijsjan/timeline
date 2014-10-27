@@ -1,5 +1,4 @@
 React = require 'react'
-$ = require 'jquery'
 Slider = require './slider.cjsx'
 
 module.exports = React.createClass
